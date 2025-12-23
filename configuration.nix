@@ -10,6 +10,15 @@
   boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.useOSProber = true;
 
+  # Kernel tuning
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 10;
+    "fs.inotify.max_user_watches" = 524288;
+  };
+
+  services.locate.enable = true;
+  services.fwupd.enable = true;
+
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
@@ -44,35 +53,48 @@
       lazygit
       gh
       stow
-      fzf
-      ripgrep
-      bat
-      fd
       rofi
       xclip
-      
-      # Helix LSPs
-      nil
-      gopls
-      
-      # Go toolchain (performance do gopls)
-      go
-      gofumpt
-      golangci-lint
-      
-      # Formatter Nix
-      nixfmt
     ];
   };
 
   nixpkgs.config.allowUnfree = true;
 
-  # 🔧 Pacotes do sistema + LSPs
+  # =========================================================
+  # 📦 System packages (dev & LSPs)
+  # =========================================================
   environment.systemPackages = with pkgs; [
     git
+    fzf
+    ripgrep
+    bat
+    fd
+
+    # LSPs
+    nil
+    gopls
+
+    # Go toolchain
+    go
+    gofumpt
+    golangci-lint
+
+    # Nix formatter
+    nixfmt
   ];
 
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+  };
+
+  environment.shellAliases = {
+    ll = "ls -lah";
+    gs = "git status";
+    gp = "git pull";
+    nixr = "sudo nixos-rebuild switch";
+  };
 
   programs.git = {
     enable = true;
@@ -82,20 +104,30 @@
     };
   };
 
+  # =========================================================
+  # 🔐 Security
+  # =========================================================
   services.openssh = {
     enable = true;
     settings = {
       PermitRootLogin = "no";
-      PasswordAuthentication = true;
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
     };
+  };
+
+  services.fail2ban.enable = true;
+
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = true;
   };
 
   networking.firewall.allowedTCPPorts = [ 22 ];
 
   # =========================================================
-  # 🧠 HELIX — Languages + LSP (global)
+  # 🧠 HELIX — Languages + LSP
   # =========================================================
-
   environment.etc."helix/languages.toml".text = ''
 [[language]]
 name = "nix"
@@ -112,7 +144,6 @@ auto-format = true
 command = "gopls"
 
 [language-server.gopls.config]
-# ⚡ Performance tuning
 analyses = {
   unusedparams = true,
   unusedwrite = true,
@@ -126,15 +157,13 @@ deepCompletion = false
 matcher = "Fuzzy"
 symbolMatcher = "FastFuzzy"
 semanticTokens = true
-
 memoryMode = "DegradeClosed"
 directoryFilters = ["-**/vendor", "-**/node_modules"]
 '';
 
   # =========================================================
-  # ⌨️ HELIX — Keybindings LSP
+  # ⌨️ HELIX — Keybindings
   # =========================================================
-
   environment.etc."helix/config.toml".text = ''
 [editor]
 line-number = "relative"
@@ -146,35 +175,57 @@ idle-timeout = 0
 display-messages = true
 
 [keys.normal]
-# Hover
 "K" = "hover"
-
-# Go to
 "gd" = "goto_definition"
 "gD" = "goto_declaration"
 "gr" = "goto_references"
 "gi" = "goto_implementation"
 "gt" = "goto_type_definition"
-
-# Rename
 "rn" = "rename_symbol"
-
-# Code actions
 "ga" = "code_action"
-
-# Diagnostics
 "]d" = "goto_next_diag"
 "[d" = "goto_prev_diag"
-
-# Formatting
 "gf" = "format"
-
-# Signature help
 "gs" = "signature_help"
 
 [keys.insert]
 "C-space" = "completion"
 '';
+
+environment.etc."wezterm/wezterm.lua".text = ''
+local wezterm = require 'wezterm'
+
+return {
+  -- Usa o shell padrão do usuário (zsh)
+  default_prog = { "zsh" },
+
+  -- Qualidade de vida
+  hide_tab_bar_if_only_one_tab = true,
+  color_scheme = "Gruvbox Dark",
+  window_decorations = "RESIZE",
+  scrollback_lines = 10000,
+
+  -- Performance
+  front_end = "WebGpu",
+}
+'';
+
+environment.variables.TERMINAL = "wezterm";
+
+
+  # =========================================================
+  # 🧹 Nix maintenance
+  # =========================================================
+  nix.settings = {
+    auto-optimise-store = true;
+    experimental-features = [ "nix-command" "flakes" ];
+  };
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
 
   system.stateVersion = "25.11";
 }
