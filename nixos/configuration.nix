@@ -17,7 +17,7 @@
   services.locate.enable = true;
   services.fwupd.enable = true;
 
-  networking.hostName = "nixos";
+  networking.hostName = "caveos";
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Sao_Paulo";
@@ -87,15 +87,17 @@
 
   networking.firewall.allowedTCPPorts = [ 22 ];
 
-  nix.settings = {
-    auto-optimise-store = true;
-    experimental-features = [ "nix-command" "flakes" ];
-  };
-
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
+  # Enable flakes and nifx-command
+  nix = {
+    settings = {
+      auto-optimise-store = true;
+      experimental-features = [ "nix-command" "flakes" ];
+    };
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 1d";
+    };
   };
 
   system.stateVersion = "25.11";
