@@ -55,17 +55,26 @@
     description = "BORBA JR W";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-       helix
-       wezterm
-       lazygit
-       gh
-       stow
-       fzf
-       ripgrep
-       bat
-       fd
-       rofi
-       xclip
+      helix
+      wezterm
+      lazygit
+      gh
+      stow
+      fzf
+      ripgrep
+      bat
+      fd
+      rofi
+      xclip
+
+      # LSPs
+      nil        # LSP para Nix (recomendado)
+      gopls      # LSP para Golang
+      
+      # Tooling Go (opcional, mas altamente recomendado)
+      go
+      gofumpt
+      golangci-lint
     ];
     shell = pkgs.zsh;
   };
