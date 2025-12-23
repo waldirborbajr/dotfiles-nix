@@ -75,9 +75,48 @@
       go
       gofumpt
       golangci-lint
+
+      # Formatter Nix
+      nixfmt
     ];
     shell = pkgs.zsh;
   };
+
+  environment.etc."helix/languages.toml".text = ''
+    [[language]]
+    name = "nix"
+    language-servers = ["nil"]
+    formatter = { command = "nixfmt" }
+    auto-format = true
+    
+    [[language]]
+    name = "go"
+    language-servers = ["gopls"]
+    auto-format = true
+    
+    [language-server.gopls]
+    command = "gopls"
+    
+    [language-server.gopls.config]
+    # 🔥 PERFORMANCE
+    analyses = {
+      unusedparams = true,
+      unusedwrite = true,
+      nilness = true
+    }
+    
+    staticcheck = false            # desligar se quiser mais velocidade
+    usePlaceholders = true
+    completeUnimported = true
+    deepCompletion = false         # reduz custo
+    matcher = "Fuzzy"
+    symbolMatcher = "FastFuzzy"
+    semanticTokens = true
+    
+    # Cache maior e incremental
+    memoryMode = "DegradeClosed"
+    directoryFilters = ["-**/vendor", "-**/node_modules"]
+  ''
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
