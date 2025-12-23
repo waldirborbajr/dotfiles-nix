@@ -1,36 +1,21 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
-  # Bootloader.
+  # Bootloader
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/vda";
   boot.loader.grub.useOSProber = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
+  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
   time.timeZone = "America/Sao_Paulo";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "pt_BR.UTF-8";
     LC_IDENTIFICATION = "pt_BR.UTF-8";
@@ -43,17 +28,16 @@
     LC_TIME = "pt_BR.UTF-8";
   };
 
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.borba = {
     isNormalUser = true;
     description = "BORBA JR W";
     extraGroups = [ "networkmanager" "wheel" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [
       helix
       wezterm
@@ -66,92 +50,38 @@
       fd
       rofi
       xclip
-
-      # LSPs
-      nil        # LSP para Nix (recomendado)
-      gopls      # LSP para Golang
       
-      # Tooling Go (opcional, mas altamente recomendado)
+      # Helix LSPs
+      nil
+      gopls
+      
+      # Go toolchain (performance do gopls)
       go
       gofumpt
       golangci-lint
-
+      
       # Formatter Nix
       nixfmt
     ];
-    shell = pkgs.zsh;
   };
 
-  environment.etc."helix/languages.toml".text = ''
-    [[language]]
-    name = "nix"
-    language-servers = ["nil"]
-    formatter = { command = "nixfmt" }
-    auto-format = true
-    
-    [[language]]
-    name = "go"
-    language-servers = ["gopls"]
-    auto-format = true
-    
-    [language-server.gopls]
-    command = "gopls"
-    
-    [language-server.gopls.config]
-    # 🔥 PERFORMANCE
-    analyses = {
-      unusedparams = true,
-      unusedwrite = true,
-      nilness = true
-    }
-    
-    staticcheck = false            # desligar se quiser mais velocidade
-    usePlaceholders = true
-    completeUnimported = true
-    deepCompletion = false         # reduz custo
-    matcher = "Fuzzy"
-    symbolMatcher = "FastFuzzy"
-    semanticTokens = true
-    
-    # Cache maior e incremental
-    memoryMode = "DegradeClosed"
-    directoryFilters = ["-**/vendor", "-**/node_modules"]
-  ''
-
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # 🔧 Pacotes do sistema + LSPs
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
     git
   ];
 
-  programs.zsh = {
-    enable = true;
-  };
-  
+  programs.zsh.enable = true;
+
   programs.git = {
     enable = true;
     config = {
       user.name = "waldirborbajr";
-      user.email= "wborbajr@gmail.com";
+      user.email = "wborbajr@gmail.com";
     };
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
     settings = {
@@ -160,18 +90,91 @@
     };
   };
 
-  # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [ 22 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  # =========================================================
+  # 🧠 HELIX — Languages + LSP (global)
+  # =========================================================
 
+  environment.etc."helix/languages.toml".text = ''
+[[language]]
+name = "nix"
+language-servers = ["nil"]
+formatter = { command = "nixfmt" }
+auto-format = true
+
+[[language]]
+name = "go"
+language-servers = ["gopls"]
+auto-format = true
+
+[language-server.gopls]
+command = "gopls"
+
+[language-server.gopls.config]
+# ⚡ Performance tuning
+analyses = {
+  unusedparams = true,
+  unusedwrite = true,
+  nilness = true
+}
+
+staticcheck = false
+usePlaceholders = true
+completeUnimported = true
+deepCompletion = false
+matcher = "Fuzzy"
+symbolMatcher = "FastFuzzy"
+semanticTokens = true
+
+memoryMode = "DegradeClosed"
+directoryFilters = ["-**/vendor", "-**/node_modules"]
+'';
+
+  # =========================================================
+  # ⌨️ HELIX — Keybindings LSP
+  # =========================================================
+
+  environment.etc."helix/config.toml".text = ''
+[editor]
+line-number = "relative"
+mouse = true
+auto-save = true
+idle-timeout = 0
+
+[editor.lsp]
+display-messages = true
+
+[keys.normal]
+# Hover
+"K" = "hover"
+
+# Go to
+"gd" = "goto_definition"
+"gD" = "goto_declaration"
+"gr" = "goto_references"
+"gi" = "goto_implementation"
+"gt" = "goto_type_definition"
+
+# Rename
+"rn" = "rename_symbol"
+
+# Code actions
+"ga" = "code_action"
+
+# Diagnostics
+"]d" = "goto_next_diag"
+"[d" = "goto_prev_diag"
+
+# Formatting
+"gf" = "format"
+
+# Signature help
+"gs" = "signature_help"
+
+[keys.insert]
+"C-space" = "completion"
+'';
+
+  system.stateVersion = "25.11";
 }
