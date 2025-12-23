@@ -48,13 +48,8 @@
     extraGroups = [ "networkmanager" "wheel" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
-      helix
-      wezterm
       lazygit
       gh
-      stow
-      rofi
-      xclip
     ];
   };
 
@@ -64,6 +59,13 @@
   # 📦 System packages (dev & LSPs)
   # =========================================================
   environment.systemPackages = with pkgs; [
+    helix
+    wezterm
+    gh
+    stow
+    rofi
+    xclip
+
     git
     fzf
     ripgrep
