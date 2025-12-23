@@ -19,8 +19,8 @@
 
   programs.zsh = {
     enable = true;
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
+#    autosuggestions.enable = true;
+#    syntaxHighlighting.enable = true;
     shellAliases = {
       ll = "ls -lah";
       gs = "git status";
@@ -41,51 +41,51 @@
   # ===============================
   # Helix
   # ===============================
-  home.file.".config/helix/languages.toml".text = ''
-[[language]]
-name = "nix"
-language-servers = ["nil"]
-formatter = { command = "nixfmt" }
-auto-format = true
+#   home.file.".config/helix/languages.toml".text = ''
+# [[language]]
+# name = "nix"
+# language-servers = ["nil"]
+# formatter = { command = "nixfmt" }
+# auto-format = true
 
-[[language]]
-name = "go"
-language-servers = ["gopls"]
-auto-format = true
+# [[language]]
+# name = "go"
+# language-servers = ["gopls"]
+# auto-format = true
 
-[language-server.gopls]
-command = "gopls"
+# [language-server.gopls]
+# command = "gopls"
 
-[language-server.gopls.config]
-analyses = {
-  unusedparams = true,
-  unusedwrite = true,
-  nilness = true
-}
-staticcheck = false
-usePlaceholders = true
-completeUnimported = true
-deepCompletion = false
-matcher = "Fuzzy"
-symbolMatcher = "FastFuzzy"
-semanticTokens = true
-memoryMode = "DegradeClosed"
-directoryFilters = ["-**/vendor", "-**/node_modules"]
-'';
+# [language-server.gopls.config]
+# analyses = {
+#   unusedparams = true,
+#   unusedwrite = true,
+#   nilness = true
+# }
+# staticcheck = false
+# usePlaceholders = true
+# completeUnimported = true
+# deepCompletion = false
+# matcher = "Fuzzy"
+# symbolMatcher = "FastFuzzy"
+# semanticTokens = true
+# memoryMode = "DegradeClosed"
+# directoryFilters = ["-**/vendor", "-**/node_modules"]
+# '';
 
-  home.file.".config/helix/config.toml".text = ''
-[editor]
-line-number = "relative"
-mouse = true
-auto-save = true
+#   home.file.".config/helix/config.toml".text = ''
+# [editor]
+# line-number = "relative"
+# mouse = true
+# auto-save = true
 
-[keys.normal]
-"K" = "hover"
-"gd" = "goto_definition"
-"gr" = "goto_references"
-"rn" = "rename_symbol"
-"ga" = "code_action"
-'';
+# [keys.normal]
+# "K" = "hover"
+# "gd" = "goto_definition"
+# "gr" = "goto_references"
+# "rn" = "rename_symbol"
+# "ga" = "code_action"
+# '';
 
   # ===============================
   # WezTerm

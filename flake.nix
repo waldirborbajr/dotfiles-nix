@@ -1,6 +1,9 @@
 {
   description = "NixOS configuration (borba)";
 
+
+
+  
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
@@ -24,6 +27,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+	    home-manager.backupFileExtension = "backup";
 
             home-manager.users.borba = import ./home/home.nix;
           }
