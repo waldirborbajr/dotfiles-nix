@@ -1,4 +1,4 @@
-sudo nixos-rebuild switch \
-  --extra-experimental-features "nix-command flakes" \
+sudo env NIX_CONFIG="experimental-features = nix-command flakes" \
+  nixos-rebuild switch \
   --flake .#caveos \
   --show-trace
