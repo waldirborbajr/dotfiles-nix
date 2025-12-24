@@ -24,7 +24,6 @@
       nixt = "sudo nixos-rebuild test --flake '.#caveos'";
       #### Garbage collection
       nixgc = "sudo nix-collect-garbage -d";
-      nixgcu = "nix-collect-garbage -d";
       nixstore = "sudo nix-store --optimise";
       #### Gerações
       nixgen = "sudo nix-env --list-generations --profile /nix/var/nix/profiles/system";
