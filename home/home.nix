@@ -10,6 +10,7 @@
     ./git.nix
     ./zellij.nix
     ./htop.nix
+    ./nerdfonts.nix
   ];
 
   home.packages = with pkgs; [
