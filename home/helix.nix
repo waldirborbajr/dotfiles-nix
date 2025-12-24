@@ -1,7 +1,6 @@
 { pkgs, ... }:
 
 {
-
   home = {
     packages = with pkgs; [
       # Nix
@@ -18,10 +17,6 @@
     # defaultEditor = true;
     languages = {
       language = [
-        # {
-        #   name = "nix";
-        #   language-servers = [ "nixd" ];
-        # }
         {
           name = "nix";
           auto-format = true;
@@ -46,21 +41,9 @@
             unit = "	";
           };
         }
-        {
-          name = "markdown";
-          auto-format = true;
-          soft-wrap.enable = true;
-          soft-wrap.wrap-at-text-width = true;
-          language-servers = [
-            "markdown-oxide"
-            "ltex-ls"
-          ];
-        }
       ];
       language-server = {
         nixd.command = "${pkgs.nixd}/bin/nixd";
-        markdown-oxide.command = "${pkgs.markdown-oxide}/bin/markdown-oxide";
-        ltex-ls.command = "${pkgs.ltex-ls}/bin/ltex-ls";
       };
     };
     settings = {
