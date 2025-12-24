@@ -12,7 +12,7 @@ let
 in
 {
   config = {
-    home-manager.users.cole =
+    home-manager.users.borba =
       { pkgs, ... }:
       {
         # xdg.configFile."helix/languages.toml".source = gen {
