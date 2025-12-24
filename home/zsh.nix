@@ -4,9 +4,34 @@
   programs.zsh = {
     enable = true;
 
-    ## Plugins nativos do Home Manager
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
+    plugins = [
+
+
+      {
+
+
+        name = "zsh-autosuggestions";
+
+
+        src = pkgs.zsh-autosuggestions;
+
+
+      }
+
+
+      {
+
+
+        name = "zsh-syntax-highlighting";
+
+
+        src = pkgs.zsh-syntax-highlighting;
+
+
+      }
+
+
+    ];
 
     shellAliases = {
       #### Navegação / básicos
