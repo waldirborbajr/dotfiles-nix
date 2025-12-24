@@ -6,8 +6,15 @@
     ./hardware-configuration.nix
   ];
 
+  #### Bootloader (OBRIGATÓRIO no host)
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/vda";
+  boot.loader.grub.useOSProber = true;
+
+  #### Host identity
   networking.hostName = "caveos";
 
+  #### User
   users.users.borba = {
     isNormalUser = true;
     description = "BORBA JR W";
