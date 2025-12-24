@@ -13,7 +13,7 @@
   };
 
   programs.helix = {
-    enable = false;
+    enable = true;
     # package = pkgs.helix;
     # defaultEditor = true;
     languages = {
