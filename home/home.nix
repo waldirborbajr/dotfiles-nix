@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  # home.stateVersion = "25.11";
+  home.stateVersion = "25.11";
 
   imports = [
     ./zsh.nix
