@@ -50,7 +50,7 @@
       nixsize = "nix path-info -Sh /run/current-system";
     };
 
-programs.zsh.initExtra = ''
+zsh.initExtra = ''
   nix-clean-all() {
     echo "→ Nix: garbage collection (root)"
     sudo nix-collect-garbage -d
