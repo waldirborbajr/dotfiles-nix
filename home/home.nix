@@ -8,6 +8,7 @@
     ./helix.nix
     ./wezterm.nix
     ./git.nix
+    ./zellij.nix
   ];
 
   home.packages = with pkgs; [
