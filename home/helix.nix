@@ -1,110 +1,157 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    rust-analyzer
-    rustfmt
-    cargo
 
-    gopls
-    go_1_25
-    goperf
-    golangci-lint
-    golangci-lint-langserver
-    delve
-
-    nil
-    nixd
-    alejandra
-  ];
+  home = {
+    packages = with pkgs; [
+      # Nix
+      nil
+      nixpkgs-fmt
+      # Web
+      vscode-langservers-extracted # HTML/CSS/JSON/ESLint language servers
+      typescript-language-server
+      svelte-language-server
+      nodePackages.prettier
+      nodePackages.eslint
+      # Markdown
+      marksman
+      markdownlint-cli
+      # Lua
+      lua-language-server
+      # Python
+      pyright
+      ruff-lsp
+      # C#
+      csharp-ls
+      # C, C++
+      clang-tools
+      # Rust
+      rust-analyzer
+      rustfmt
+      # SQL
+      sqls
+      # Haskell
+      haskell-language-server
+      # Bash
+      bash-language-server
+      # TOML
+      taplo
+      # Runtimes and Libraries
+      lldb
+      helix
+    ];
+  };
 
   programs.helix = {
-    enable = true;
-    defaultEditor = true;
-
+    enable = false;
+    # package = pkgs.helix;
+    # defaultEditor = true;
+    languages = {
+      language = [
+        # {
+        #   name = "nix";
+        #   language-servers = [ "nixd" ];
+        # }
+        {
+          name = "nix";
+          auto-format = true;
+          formatter.command = "alejandra";
+          language-servers = [ "nil" ];
+          indent.tab-width = 2;
+          indent.unit = " ";
+        }
+        {
+          name = "rust";
+          auto-format = true;
+          indent = {
+            tab-width = 2;
+            unit = "	";
+          };
+        }
+        {
+          name = "go";
+          auto-format = true;
+          indent = {
+            tab-width = 2;
+            unit = "	";
+          };
+        }
+        {
+          name = "markdown";
+          auto-format = true;
+          soft-wrap.enable = true;
+          soft-wrap.wrap-at-text-width = true;
+          language-servers = [ "markdown-oxide" "ltex-ls" ];
+        }
+      ];
+      language-server = {
+        nixd.command = "${pkgs.nixd}/bin/nixd";
+        markdown-oxide.command = "${pkgs.markdown-oxide}/bin/markdown-oxide";
+        ltex-ls.command = "${pkgs.ltex-ls}/bin/ltex-ls";
+      };
+    };
     settings = {
-      theme = "solarized_dark";
+      theme = "catppuccin_mocha";
       editor = {
         line-number = "relative";
-        lsp.display-messages = true;
-        cursor-shape = {
-          insert = "bar";
-          normal = "block";
-          select = "underline";
+        cursorline = true;
+        bufferline = "always";
+        color-modes = true;
+        cursor-shape.insert = "bar";
+        cursor-shape.normal = "block";
+        cursor-shape.select = "underline";
+        indent-guides.render = true;
+        indent-guides.character = "┊";
+        indent-guides.skip-levels = 1;
+        shell = [ "zsh" "-c" ];
+        scroll-lines = 6;
+        completion-trigger-len = 2;
+        text-width = 80;
+        auto-completion = true;
+        auto-format = true;
+        completion-replace = true;
+        auto-save = {
+          focus-lost = true;
+          after-delay.enable = true;
+        };
+        auto-info = true;
+        true-color = true;
+        popup-border = "all";
+        # bufferline = "multiple";
+        lsp = {
+          enable = true;
+          display-messages = true;
+          display-inlay-hints = true;
+          auto-signature-help = true;
+          snippets = true;
+        };
+        soft-wrap = {
+          enable = false;
+          wrap-at-text-width = true;
+        };
+        file-picker = {
+          hidden = true;
+          parents = false;
+          git-ignore = false;
+          git-exclude = false;
+          git-global = true;
+          max-depth = 4;
+        };
+        whitespace.render = "all";
+      };
+      keys = {
+        normal = {
+          space = {
+            W = ":toggle-option soft-wrap.enable";
+            q = ":reflow";
+          };
+        };
+        select = { space = { q = ":reflow"; }; };
+        insert = {
+          C-c = "normal_mode";
+          "C-[" = "normal_mode";
         };
       };
     };
-
-    themes.solarized_dark = {
-      inherits = "solarized_dark";
-      "ui.background" = { };
-      "ui.statusline" = { };
-      "ui.gutter" = { };
-    };
-
-    languages.language = [
-      {
-        name = "go";
-        roots = [
-          "go.work"
-          "go.mod"
-        ];
-        auto-format = true;
-        formatter.command = "gofmt";
-        language-servers = [
-          "gopls"
-          "golangci-lint-lsp"
-        ];
-      }
-      {
-        name = "rust";
-        auto-format = true;
-        formatter = {
-          command = "rustfmt";
-          args = [
-            "--edition"
-            "2021"
-          ];
-        };
-        language-servers = [ "rust-analyzer" ];
-      }
-      {
-        name = "nix";
-        formatter = {
-          command = lib.getExe pkgs.nixfmt-rfc-style;
-        };
-        auto-format = true;
-      }
-    ];
-
-    languages.language-server.golangci-lint-lsp = {
-      command = "golangci-lint-langserver";
-      config.command = [
-        "golangci-lint"
-        "run"
-        "--path-mode=abs"
-        "--output.json.path=stdout"
-        "--output.text.path=/dev/null"
-        "--show-stats=false"
-        "--issues-exit-code=1"
-      ];
-    };
-
-    # Surface Go escape analysis / GC hints inline via gopls.
-    languages.language-server.gopls.config = {
-      "ui.codelenses" = {
-        gc_details = true;
-      };
-      "ui.diagnostic.annotations" = {
-        escape = true;
-        inline = true;
-      };
-    };
-
-    languages.language-server.rust-analyzer.config = {
-      checkOnSave.command = "clippy";
-      cargo.allFeatures = true;
-    };
-
   };
 }
