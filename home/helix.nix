@@ -1,63 +1,110 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
-let
-  # Catppuccin themes for Helix (oficial)
-  catppuccin-helix = pkgs.fetchFromGitHub {
-    owner = "catppuccin";
-    repo = "helix";
-    # versão estável conhecida
-    rev = "b6b1b52c7e1a9d9a8e2aeb4b3b5b7f6c2d8c2c6e";
-    sha256 = "sha256-m+U7E3Cz4jQeN1vH+u4R4l1Q0F0Wq4E0c7rjZ5N9XnQ=";
-  };
-in
 {
-  ############################
-  # Helix
-  ############################
+  home.packages = with pkgs; [
+    rust-analyzer
+    rustfmt
+    cargo
+
+    gopls
+    go_1_25
+    goperf
+    golangci-lint
+    golangci-lint-langserver
+    delve
+
+    nil
+    nixd
+    alejandra
+  ];
+
   programs.helix = {
     enable = true;
     defaultEditor = true;
 
     settings = {
-      theme = "catppuccin_mocha";
-
+      theme = "solarized_dark";
       editor = {
         line-number = "relative";
-        mouse = true;
-        auto-save = true;
-        cursorline = true;
-        color-modes = true;
+        lsp.display-messages = true;
+        cursor-shape = {
+          insert = "bar";
+          normal = "block";
+          select = "underline";
+        };
       };
+    };
+
+    themes.solarized_dark = {
+      inherits = "solarized_dark";
+      "ui.background" = { };
+      "ui.statusline" = { };
+      "ui.gutter" = { };
     };
 
     languages.language = [
       {
-        name = "nix";
+        name = "go";
+        roots = [
+          "go.work"
+          "go.mod"
+        ];
         auto-format = true;
-        language-servers = [ "nil" ];
-        formatter.command = "nixfmt-rfc-style";
+        formatter.command = "gofmt";
+        language-servers = [
+          "gopls"
+          "golangci-lint-lsp"
+        ];
       }
       {
-        name = "go";
+        name = "rust";
         auto-format = true;
-        language-servers = [ "gopls" ];
+        formatter = {
+          command = "rustfmt";
+          args = [
+            "--edition"
+            "2021"
+          ];
+        };
+        language-servers = [ "rust-analyzer" ];
+      }
+      {
+        name = "nix";
+        formatter = {
+          command = lib.getExe pkgs.nixfmt-rfc-style;
+        };
+        auto-format = true;
       }
     ];
+
+    languages.language-server.golangci-lint-lsp = {
+      command = "golangci-lint-langserver";
+      config.command = [
+        "golangci-lint"
+        "run"
+        "--path-mode=abs"
+        "--output.json.path=stdout"
+        "--output.text.path=/dev/null"
+        "--show-stats=false"
+        "--issues-exit-code=1"
+      ];
+    };
+
+    # Surface Go escape analysis / GC hints inline via gopls.
+    languages.language-server.gopls.config = {
+      "ui.codelenses" = {
+        gc_details = true;
+      };
+      "ui.diagnostic.annotations" = {
+        escape = true;
+        inline = true;
+      };
+    };
+
+    languages.language-server.rust-analyzer.config = {
+      checkOnSave.command = "clippy";
+      cargo.allFeatures = true;
+    };
+
   };
-
-  ############################
-  # Catppuccin themes (Helix)
-  ############################
-  home.file.".config/helix/themes".source =
-    "${catppuccin-helix}/themes";
-
-  ############################
-  # Tooling
-  ############################
-  home.packages = with pkgs; [
-    helix
-    nil
-    nixfmt-rfc-style
-    gopls
-  ];
 }
