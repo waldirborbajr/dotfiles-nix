@@ -7,14 +7,11 @@
       nil
       nixpkgs-fmt
       clang-tools
-      # Runtimes and Libraries
     ];
   };
 
   programs.helix = {
     enable = true;
-    # package = pkgs.helix;
-    # defaultEditor = true;
     languages = {
       language = [
         {
@@ -36,6 +33,13 @@
         {
           name = "go";
           auto-format = true;
+          formatter = {
+            command = "gofumpt";
+          };
+          language-servers = [
+            "gopls"
+            "golangci-lint-ls"
+          ];
           indent = {
             tab-width = 2;
             unit = "	";
@@ -44,6 +48,51 @@
       ];
       language-server = {
         nixd.command = "${pkgs.nixd}/bin/nixd";
+        gopls = {
+          command = "${pkgs.gopls}/bin/gopls";
+          config = {
+            gopls = {
+              staticcheck = true;
+              completeUnimported = true;
+              matcher = "fuzzy";
+              symbolMatcher = "fuzzy";
+              experimentalPostfixCompletions = true;
+              gofumpt = true;
+              build.expandWorkspaceToModule = true;
+              analyses = {
+                unusedparams = true;
+                unusedwrite = true;
+                unusedvariable = true;
+                fieldalignment = true;
+                nilness = true;
+                shadow = true;
+                unusedresult = true;
+              };
+              codelenses = {
+                generate = true;
+                gc_details = true;
+                test = true;
+                tidy = true;
+                upgrade_dependency = true;
+                vendor = true;
+                run_govulncheck = true;
+              };
+              hints = {
+                assignVariableTypes = true;
+                compositeLiteralFields = true;
+                compositeLiteralTypes = true;
+                constantValues = true;
+                functionTypeParameters = true;
+                parameterNames = true;
+                rangeVariableTypes = true;
+              };
+              usePlaceholders = true;
+            };
+          };
+        };
+        golangci-lint-ls = {
+          command = "${pkgs.golangci-lint-langserver}/bin/golangci-lint-langserver";
+        };
       };
     };
     settings = {
@@ -76,7 +125,6 @@
         auto-info = true;
         true-color = true;
         popup-border = "all";
-        # bufferline = "multiple";
         lsp = {
           enable = true;
           display-messages = true;

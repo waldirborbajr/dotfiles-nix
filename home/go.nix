@@ -1,6 +1,6 @@
 { pkgs, config, ... }:
-{
 
+{
   programs.go = {
     enable = true;
     telemetry = {
@@ -9,7 +9,6 @@
   };
 
   home.packages = with pkgs; [
-
     # Go debugger
     delve
     # Language server
@@ -41,12 +40,7 @@
 
   home.sessionVariables = {
     GOPATH = "$HOME/go";
-    # GOBIN = "${GOPATH}/bin";
     GOBIN = "$HOME/go/bin";
-
-    #   GOROOT = "${config.programs.go.package}/share/go";
-    #   GOPATH = "${config.home.homeDirectory}/go";
-    #   GOBIN = "${config.home.homeDirectory}/bin";
   };
 
   home.sessionPath = [ "${config.home.sessionVariables.GOBIN}" ];
