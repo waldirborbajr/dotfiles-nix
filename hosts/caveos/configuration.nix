@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/nixos/base.nix
+    ../../modules/nixos/default.nix
     ./hardware-configuration.nix
   ];
 
