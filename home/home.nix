@@ -7,6 +7,7 @@
     ./zsh.nix
     ./helix.nix
     ./wezterm.nix
+    ./git.nix
   ];
 
   home.packages = with pkgs; [
@@ -19,11 +20,6 @@
 
   home.sessionVariables = {
     TERMINAL = "wezterm";
-  };
-
-  programs.git = {
-    enable = true;
-    userName = "waldirborbajr";
-    userEmail = "wborbajr@gmail.com";
+    EDITOR = "hx";
   };
 }
