@@ -4,13 +4,13 @@
   home.stateVersion = "25.11";
 
   imports = [
-    ./zsh.nix
-    ./helix.nix
-    ./wezterm.nix
+    ./zsh/zsh.nix
+    ./helix/helix.nix
+    ./wezterm/wezterm.nix
     ./git.nix
-    ./zellij.nix
+    ./zellij/zellij.nix
     ./htop.nix
-    ./nerdfonts.nix
+    # ./nerdfonts.nix
   ];
 
   home.packages = with pkgs; [
