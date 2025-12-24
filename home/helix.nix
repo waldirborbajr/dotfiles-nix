@@ -1,110 +1,156 @@
-{ pkgs, lib, ... }:
-
 {
-  home.packages = with pkgs; [
-    rust-analyzer
-    rustfmt
-    cargo
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 
-    gopls
-    go_1_25
-    goperf
-    golangci-lint
-    golangci-lint-langserver
-    delve
+let
+  helixPkg =
+    # pkgs.helix;
+    inputs.helix.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in
+{
+  config = {
+    home-manager.users.cole =
+      { pkgs, ... }:
+      {
+        # xdg.configFile."helix/languages.toml".source = gen {
+        #   languages = [
+        #     {
+        #       name = "nix";
+        #       formatter = {command = "alejandra";};
+        #     }
+        #   ];
+        # };
+        xdg.configFile."helix/themes/zed_onedark_custom.toml".text = ''
+          inherits = "zed_onedark"
 
-    nil
-    nixd
-    alejandra
-  ];
+          "ui.statusline.inactive" = { fg = "#546178", bg = "#21252B" }
+          "ui.statusline" = { bg = "#181a1f" }
+        '';
+        # "ui.statusline" = "#000000"
+        # "ui.statusline.inactive" = "#000000"
+        xdg.configFile."helix/languages.toml".text =
+          let
+          in
+          # lldbRustcScript = pkgs.writeShellScript "lldb-rustc-prelude.py" ''
+          #   import subprocess
+          #   import pathlib
+          #   import lldb
+          #   # determine the sysroot for the active rust interpreter
+          #   rustlib_etc = pathlib.Path(subprocess.getoutput('rustc --print sysroot')) / 'lib' / 'rustlib' / 'etc'
+          #   if not rustlib_etc.exists():
+          #       raise RuntimeError('Unable to determine rustc sysroot')
+          #   # load lldb_lookup.py and execute lldb_commands with the correct path
+          #   lldb.debugger.HandleCommand(f"""command script import "{rustlib_etc / 'lldb_lookup.py'}" """)
+          #   lldb.debugger.HandleCommand(f"""command source -s 0 "{rustlib_etc / 'lldb_commands'}" """)
+          # '';
+          ''
+            [language-server.nu-lsp]
+            command = "nu"
+            args = [ "--lsp" ]
 
-  programs.helix = {
-    enable = true;
-    defaultEditor = true;
+            [[language]]
+            name = "nix"
+            auto-format = false
+            formatter = { command = "nixfmt-rfc-style" }
+            language-servers = [ "nixd" ] # TESTING
 
-    settings = {
-      theme = "solarized_dark";
-      editor = {
-        line-number = "relative";
-        lsp.display-messages = true;
-        cursor-shape = {
-          insert = "bar";
-          normal = "block";
-          select = "underline";
+            [[language]]
+            name = "nu"
+            language-servers = [ "nu-lsp" ]
+          '';
+
+        # [[language]]
+        # name = "rust"
+
+        # [language.debugger]
+        # name = "lldb-vscode"
+        # transport = "stdio"
+        # command = "lldb-vscode"
+        #   [[langauge.debugger.templates]]
+        #   name = "binary"
+        #   request = "launch"
+        #   completion = [ { name = "binary", completion = "filename" } ]
+        #   args = { program = "{0}", initCommands = [ "command script import ${lldbRustcScript}" ] }
+        # '';
+        programs.helix = {
+          enable = true;
+          package = helixPkg;
+
+          settings = {
+            theme = {
+              dark = "catppuccin_mocha";
+              light = "catppuccin_latte";
+            };
+
+            editor = {
+              auto-pairs = false;
+              bufferline = "always";
+              color-modes = true;
+              cursor-shape = {
+                normal = "block";
+                insert = "bar";
+                select = "underline";
+              };
+              cursorcolumn = true;
+              cursorline = true;
+              gutters = [
+                "diagnostics"
+                "line-numbers"
+                "spacer"
+                "diff"
+              ];
+              file-picker = {
+                hidden = false;
+              };
+              indent-guides = {
+                render = true;
+                character = "│";
+              };
+              line-number = "relative";
+              lsp = {
+                display-messages = true;
+              };
+              mouse = true;
+              rulers = [
+                80
+                120
+              ];
+              statusline = {
+                left = [
+                  "mode"
+                  "spinner"
+                  "version-control"
+                  "file-name"
+                  "file-modification-indicator"
+                  "read-only-indicator"
+                ];
+                center = [ ];
+                right = [
+                  "register"
+                  "file-type"
+                  "diagnostics"
+                  "selections"
+                  "position"
+                  "position-percentage"
+                ];
+              };
+              true-color = true;
+              whitespace = {
+                render.space = "all";
+                render.tab = "all";
+                render.newline = "all";
+                characters.space = " ";
+                characters.nbsp = "⍽";
+                characters.tab = "→";
+                characters.newline = "⏎";
+                characters.tabpad = "-";
+              };
+            };
+          };
         };
       };
-    };
-
-    themes.solarized_dark = {
-      inherits = "solarized_dark";
-      "ui.background" = { };
-      "ui.statusline" = { };
-      "ui.gutter" = { };
-    };
-
-    languages.language = [
-      {
-        name = "go";
-        roots = [
-          "go.work"
-          "go.mod"
-        ];
-        auto-format = true;
-        formatter.command = "gofmt";
-        language-servers = [
-          "gopls"
-          "golangci-lint-lsp"
-        ];
-      }
-      {
-        name = "rust";
-        auto-format = true;
-        formatter = {
-          command = "rustfmt";
-          args = [
-            "--edition"
-            "2021"
-          ];
-        };
-        language-servers = [ "rust-analyzer" ];
-      }
-      {
-        name = "nix";
-        formatter = {
-          command = lib.getExe pkgs.nixfmt-rfc-style;
-        };
-        auto-format = true;
-      }
-    ];
-
-    languages.language-server.golangci-lint-lsp = {
-      command = "golangci-lint-langserver";
-      config.command = [
-        "golangci-lint"
-        "run"
-        "--path-mode=abs"
-        "--output.json.path=stdout"
-        "--output.text.path=/dev/null"
-        "--show-stats=false"
-        "--issues-exit-code=1"
-      ];
-    };
-
-    # Surface Go escape analysis / GC hints inline via gopls.
-    languages.language-server.gopls.config = {
-      "ui.codelenses" = {
-        gc_details = true;
-      };
-      "ui.diagnostic.annotations" = {
-        escape = true;
-        inline = true;
-      };
-    };
-
-    languages.language-server.rust-analyzer.config = {
-      checkOnSave.command = "clippy";
-      cargo.allFeatures = true;
-    };
-
   };
 }
