@@ -19,7 +19,7 @@
         modules = [
           ./hosts/caveos/configuration.nix
 
-          home-manager.nixosModules.home-manager
+          home-manager.nixosModules.default
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
