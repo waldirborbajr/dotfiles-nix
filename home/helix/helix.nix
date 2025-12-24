@@ -105,8 +105,8 @@
         cursor-shape.insert = "bar";
         cursor-shape.normal = "block";
         cursor-shape.select = "underline";
-        indent-guides.render = true;
-        indent-guides.character = "┊";
+        # indent-guides.render = true;
+        # indent-guides.character = "┊";
         indent-guides.skip-levels = 1;
         shell = [
           "zsh"
