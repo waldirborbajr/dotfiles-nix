@@ -4,8 +4,16 @@
   programs.zsh = {
     enable = true;
 
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
+    plugins = [
+      {
+        name = "zsh-autosuggestions";
+        src = pkgs.zsh-autosuggestions;
+      }
+      {
+        name = "zsh-syntax-highlighting";
+        src = pkgs.zsh-syntax-highlighting;
+      }
+    ];
 
     shellAliases = {
       ll = "ls -lah";
