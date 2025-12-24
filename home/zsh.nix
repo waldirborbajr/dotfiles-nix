@@ -32,7 +32,7 @@
       #### Flakes
       nixflake = "nix flake show";
       nixlock = "nix flake lock --recreate-lock-file";
-      nixupdate = "nix flake update";
+      nixupdate = "sudo nix flake update";
       #### Debug / recovery
       nixtrace = "sudo nixos-rebuild switch --show-trace --flake '.#caveos'";
       nixrollback = "sudo nixos-rebuild switch --rollback";
