@@ -49,5 +49,25 @@
       nixwhy = "nix why-depends";
       nixsize = "nix path-info -Sh /run/current-system";
     };
+
+programs.zsh.initExtra = ''
+  nix-clean-all() {
+    echo "→ Nix: garbage collection (root)"
+    sudo nix-collect-garbage -d
+
+    echo "→ Nix: garbage collection (user)"
+    nix-collect-garbage -d
+
+    echo "→ Nix: optimise store"
+    sudo nix-store --optimise
+
+    echo "→ Nix: remove old system generations"
+    sudo nix-env --delete-generations old \
+      --profile /nix/var/nix/profiles/system
+
+    echo "✔ Nix cleanup complete"
+  }
+'';
+
   };
 }
