@@ -4,16 +4,9 @@
   programs.zsh = {
     enable = true;
 
-    plugins = [
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.zsh-autosuggestions;
-      }
-      {
-        name = "zsh-syntax-highlighting";
-        src = pkgs.zsh-syntax-highlighting;
-      }
-    ];
+    ## Plugins nativos do Home Manager
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
 
     shellAliases = {
       #### Navegação / básicos
@@ -27,12 +20,12 @@
       nixd = "sudo nixos-rebuild dry-build --flake '.#caveos'";
       nixt = "sudo nixos-rebuild test   --flake '.#caveos'";
 
-      #### Garbage collection (IMPORTANTE)
+      #### Garbage collection
       nixgc = "sudo nix-collect-garbage -d";
       nixgcu = "nix-collect-garbage -d";
       nixstore = "sudo nix-store --optimise";
 
-      #### Limpeza de gerações
+      #### Gerações
       nixgen = "sudo nix-env --list-generations --profile /nix/var/nix/profiles/system";
       nixold = "sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system";
 
@@ -45,29 +38,28 @@
       nixtrace = "sudo nixos-rebuild switch --show-trace --flake '.#caveos'";
       nixrollback = "sudo nixos-rebuild switch --rollback";
 
-      #### Info útil
+      #### Info
       nixwhy = "nix why-depends";
       nixsize = "nix path-info -Sh /run/current-system";
     };
 
-zsh.initExtra = ''
-  nix-clean-all() {
-    echo "→ Nix: garbage collection (root)"
-    sudo nix-collect-garbage -d
+    initExtra = ''
+      nix-clean-all() {
+        echo "→ Nix: garbage collection (root)"
+        sudo nix-collect-garbage -d
 
-    echo "→ Nix: garbage collection (user)"
-    nix-collect-garbage -d
+        echo "→ Nix: garbage collection (user)"
+        nix-collect-garbage -d
 
-    echo "→ Nix: optimise store"
-    sudo nix-store --optimise
+        echo "→ Nix: optimise store"
+        sudo nix-store --optimise
 
-    echo "→ Nix: remove old system generations"
-    sudo nix-env --delete-generations old \
-      --profile /nix/var/nix/profiles/system
+        echo "→ Nix: remove old system generations"
+        sudo nix-env --delete-generations old \
+          --profile /nix/var/nix/profiles/system
 
-    echo "✔ Nix cleanup complete"
-  }
-'';
-
+        echo "✔ Nix cleanup complete"
+      }
+    '';
   };
 }
