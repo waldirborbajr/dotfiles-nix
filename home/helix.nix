@@ -17,21 +17,19 @@
       };
     };
 
-    languages = {
-      language = [
-        {
-          name = "nix";
-          auto-format = true;
-          language-servers = [ "nil" ];
-          formatter.command = "nixfmt-rfc-style";
-        }
-        {
-          name = "go";
-          auto-format = true;
-          language-servers = [ "gopls" ];
-        }
-      ];
-    };
+    languages.language = [
+      {
+        name = "nix";
+        auto-format = true;
+        language-servers = [ "nil" ];
+        formatter.command = "nixfmt-rfc-style";
+      }
+      {
+        name = "go";
+        auto-format = true;
+        language-servers = [ "gopls" ];
+      }
+    ];
   };
 
   home.packages = with pkgs; [
