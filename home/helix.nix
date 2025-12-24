@@ -51,7 +51,10 @@
           auto-format = true;
           soft-wrap.enable = true;
           soft-wrap.wrap-at-text-width = true;
-          language-servers = [ "markdown-oxide" "ltex-ls" ];
+          language-servers = [
+            "markdown-oxide"
+            "ltex-ls"
+          ];
         }
       ];
       language-server = {
@@ -73,7 +76,10 @@
         indent-guides.render = true;
         indent-guides.character = "┊";
         indent-guides.skip-levels = 1;
-        shell = [ "zsh" "-c" ];
+        shell = [
+          "zsh"
+          "-c"
+        ];
         scroll-lines = 6;
         completion-trigger-len = 2;
         text-width = 80;
@@ -116,7 +122,11 @@
             q = ":reflow";
           };
         };
-        select = { space = { q = ":reflow"; }; };
+        select = {
+          space = {
+            q = ":reflow";
+          };
+        };
         insert = {
           C-c = "normal_mode";
           "C-[" = "normal_mode";

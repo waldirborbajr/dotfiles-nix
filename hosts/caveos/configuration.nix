@@ -18,7 +18,10 @@
   users.users.borba = {
     isNormalUser = true;
     description = "BORBA JR W";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
     shell = pkgs.zsh;
   };
 

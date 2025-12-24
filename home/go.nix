@@ -10,15 +10,15 @@
 
   home.packages = with pkgs; [
 
-# Go debugger
+    # Go debugger
     delve
-# Language server
+    # Language server
     gopls
-# Formatting
+    # Formatting
     golines
-# Formatting (goimports)
+    # Formatting (goimports)
     gotools
-# Linting
+    # Linting
     golangci-lint
     golangci-lint-langserver
 
@@ -36,7 +36,7 @@
     impl
     revive
     sqlc
-    templ 
+    templ
   ];
 
   home.sessionVariables = {
@@ -44,9 +44,9 @@
     # GOBIN = "${GOPATH}/bin";
     GOBIN = "$HOME/go/bin";
 
-  #   GOROOT = "${config.programs.go.package}/share/go";
-  #   GOPATH = "${config.home.homeDirectory}/go";
-  #   GOBIN = "${config.home.homeDirectory}/bin";
+    #   GOROOT = "${config.programs.go.package}/share/go";
+    #   GOPATH = "${config.home.homeDirectory}/go";
+    #   GOBIN = "${config.home.homeDirectory}/bin";
   };
 
   home.sessionPath = [ "${config.home.sessionVariables.GOBIN}" ];
