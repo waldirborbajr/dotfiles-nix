@@ -6,18 +6,14 @@
     defaultEditor = true;
 
     settings = {
+      theme = "catppuccin_mocha";
+
       editor = {
         line-number = "relative";
         mouse = true;
         auto-save = true;
-      };
-
-      keys.normal = {
-        K = "hover";
-        gd = "goto_definition";
-        gr = "goto_references";
-        rn = "rename_symbol";
-        ga = "code_action";
+        cursorline = true;
+        color-modes = true;
       };
     };
 
@@ -25,11 +21,9 @@
       language = [
         {
           name = "nix";
-          formatter = {
-            command = "nixfmt-rfc-style";
-          };
           auto-format = true;
           language-servers = [ "nil" ];
+          formatter.command = "nixfmt-rfc-style";
         }
         {
           name = "go";
