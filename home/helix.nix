@@ -34,6 +34,7 @@
 
   home.packages = with pkgs; [
     helix
+    helix-themes
     nil
     nixfmt-rfc-style
     gopls
